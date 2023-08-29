@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\DTO\Supports\CreateSupportDTO;
+use App\DTO\Supports\UpdateSupportDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUpdateSupport;
 use App\Models\Support;
-use App\Services\SupportService;
+use App\Service\SupportService;
 use Illuminate\Http\Request;
 
 class SupportController extends Controller
@@ -15,10 +17,17 @@ class SupportController extends Controller
     ) {}
 
     public function index(Request $request){
+        // Paginação de projetos pequenos:
+        //$support = Support::paginate();
+        $support = $this->service->paginate(
+            page: $request->get('page', 1),
+            totalPerPage: $request->get('per_page', 5),
+            filter: $request->filter
+        );
 
-        $support = $this->service->getAll($request->filter);
-
-        return view('admin/supports/index', compact('support'));
+        $filters = ['filter' => $request->get('filter', '')];
+        
+        return view('admin/supports/index', compact('support', 'filters'));
     }
 
     public function show(string $id){
@@ -37,10 +46,7 @@ class SupportController extends Controller
 
     public function store(StoreUpdateSupport $request, Support $support){
 
-        $data = $request->validated ();
-        $data['status'] = 'a';
-
-        $support->create($data);
+        $this->service->new(CreateSupportDTO::makeFromRequest($request));
         
         return redirect()->route('supports.index');
     }
@@ -57,11 +63,11 @@ class SupportController extends Controller
 
     public function update(StoreUpdateSupport $request, string $id){
 
-        if (!$supports = Support::find($id)) {
+        $supports = $this->service->update(UpdateSupportDTO::makeFromRequest($request));
+
+        if (!$supports) {
             return back();
         }
-
-        $supports->update($request->validated());
 
         return redirect()->route('supports.index');
     }

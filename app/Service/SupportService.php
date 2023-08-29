@@ -1,16 +1,29 @@
 <?php
 
-namespace App\Services;
+namespace App\Service;
 
+use App\DTO\Supports\CreateSupportDTO;
+use App\Repositories\PaginationInterface;
+use App\Repositories\SupportRepositoryInterface;
+use GuzzleHttp\Promise\Create;
 use stdClass;
 
 class SupportService{
 
-    protected $repository;
+    public function __construct(
+        protected SupportRepositoryInterface $repository
+    ){}
 
-    public function __construct()
-    {
-        
+    public function paginate(
+        int $page = 1,
+        int $totalPerPage = 15,
+        string $filter = null
+        ): PaginationInterface {
+        return $this->repository->paginate(
+            page: $page = 1,
+            totalPerPage: $totalPerPage, 
+            filter: $filter,
+        );
     }
 
     public function getAll(string $filter = null): array{
@@ -23,32 +36,14 @@ class SupportService{
         return $this->repository->findOne($id);
     }
 
-    public function new(
-        string $subject,
-        string $status,
-        string $body
-    ): stdClass{
+    public function new(CreateSupportDTO $dto): stdClass{
 
-        return $this->repository->new(
-            $subject,
-            $status,
-            $body
-        );
+        return $this->repository->new($dto);
     }
 
-    public function update(
-        string $id,
-        string $subject,
-        string $status,
-        string $body
-    ): stdClass {
+    public function update($dto): stdClass {
 
-        return $this->repository->update(
-            $id,
-            $subject,
-            $status,
-            $body
-        );
+        return $this->repository->update($dto);
     }
 
     public function delete(string $id): void{

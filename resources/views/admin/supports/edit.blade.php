@@ -1,16 +1,51 @@
-<h1>Duvida {{$support->id}}</h1>
+@extends('admin.layouts.app')
 
-@if ($errors->any())
-    @foreach($errors->all() as $error)
-        {{ $error }}
-    @endforeach
-@endif
+@section('title', 'Editar Dúvida')
 
-<form action="{{ route('supports.update', $support->id) }}" method="post">
-    @csrf()
-    @method('put')
-    <input type="text" name="subject" placeholder="Digite o assunto.." value="{{$support->subject}}">
-    <textarea name="body" id="" cols="30" rows="5" placeholder="Digite a descrição">{{$support->body}}</textarea>
-    <button type="submit">Enviar</button>
+@section('header')
+Duvida {{$support->id}}
+@endsection
 
-</form>
+@section('content')
+<x-alert></x-alert>
+
+<body class="bg-gradient-primary">
+
+    <div class="container">
+
+        <div class="card o-hidden border-0 shadow-lg my-5">
+            <div class="card-body p-0">
+                <!-- Nested Row within Card Body -->
+                <div class="row">
+                    <div class="col-lg-7">
+                        <div class="p-5">
+                            <div class="text-center">
+                                <h1 class="h4 text-gray-900 mb-4">Editar Dúvida!</h1>
+                            </div>
+                            <form action="{{ route('supports.update', $support->id) }}" class="user" method="post">
+                                @method('put')
+                                @include('admin.supports.partials.form', [
+                                'support' => $support
+                                ])
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="js/sb-admin-2.min.js"></script>
+
+    </div>
+
+    @endsection
